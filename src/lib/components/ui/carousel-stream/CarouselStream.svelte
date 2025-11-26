@@ -52,6 +52,7 @@
             step = -1;
         }
         else return;
+        requestAnimationFrame(()=>{
             for(let i = startIdx, adj = items[items.length - startIdx-1];i < slides.length; i+=step){
                 const e = items[i].cloneNode(true)
                 add.call(adj, e);
@@ -59,6 +60,7 @@
             }
             if(items.length >= 3 * slides.length)
                 items.splice(step === 1?0:(items.length - slides.length), slides.length).forEach(del=>del.remove());
+        })
     }
     function onmouseenter(){
         stopScroll();

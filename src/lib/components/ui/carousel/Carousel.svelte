@@ -2,9 +2,10 @@
     import * as Carousel from "@/components/ui/carousel/index.js";
     import { cubicOut } from "svelte/easing";
     import {cn} from "@/utils.js";
+    import {onMount, tick} from "svelte";
     /** @type {import('./types').CarouselProps} */
     let {
-        controls = $bindable(),
+        controls = $bindable(null),
         slides,
         class: className,
         orientation = "horizontal",
@@ -33,7 +34,7 @@
             };
         },
     } = $props();
-    let index = $state({current: 0, previous: 0});
+    let index = $state({current: -1, previous: 0});
     const canScrollNext = $derived(index.current < slides.length - 1);
     const canScrollPrev = $derived(index.current > 0);
     controls = {
@@ -44,19 +45,16 @@
         canScrollNext: ()=>canScrollNext,
         handleKeyDown,
     };
-
     function scrollPrev() {
         if (slides.length === 0) return;
         const nextIndex = (index.current - 1 + slides.length) % slides.length;
         index = {previous: index.current,current: nextIndex};
     }
-
     function scrollNext() {
         if (slides.length === 0) return;
         const nextIndex = (index.current + 1) % slides.length;
         index = {previous: index.current,current: nextIndex};
     }
-
     function scrollTo(toIndex) {
         if (slides.length === 0) return;
         const target = ((toIndex % slides.length) + slides.length) % slides.length;
@@ -72,16 +70,19 @@
             scrollNext();
         }
     }
+    onMount(async ()=> {
+        index.current = 0;
+        await tick();
+    })
 </script>
 
-<Carousel.Root onkeydown={handleKeyDown} class={cn("w-full max-w-xs shadow-md", className)}>
-    <Carousel.Content>
+<Carousel.Root onkeydown={handleKeyDown} class={cn("w-full", className)}>
+    <Carousel.Content class="grid items-stretch justify-stretch content-stretch">
         {#each slides as slide, i (slide)}
             {@const toLeft = index.current > index.previous}
             {#if i === index.current}
                 <div
-                    class="relative col-start-1 row-start-1 h-full w-full"
-                    style="will-change: left, right;"
+                    class="relative col-start-1 row-start-1"
                     in:animation={{toLeft, coming: true}}
                     out:animation={{toLeft, coming: false}}
                 >
