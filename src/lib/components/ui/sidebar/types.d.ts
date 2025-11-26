@@ -1,6 +1,7 @@
 import {TransitionFunction, SnippetHolder} from "@/components/ui/types";
 
 export type SidebarProps = {
+    ref?: HTMLElement,
     elements: SidebarElement[],
     class?: string,
     selected?: string, //href
