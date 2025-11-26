@@ -32,7 +32,6 @@ export function typewriter(node, {delay = 0, speed = 1, deleteAfter = false, eas
     const re = new RegExp("^[\\n\\s\\t]+$")
     while ((node1 = walker.nextNode())) {
         if (node1.textContent.length === 0 || re.test(node1.textContent)) continue;
-        console.log(node1)
         textNodes.push({
             node: node1,
             content: node1.textContent,
