@@ -1,4 +1,10 @@
 {
 	"$schema": "https://inlang.com/schema/inlang-message-format",
-    "pp_alt": "Profile Photo"
+    "pp_alt": "Profile Photo",
+    "sidebar_projects_name": "Projects",
+    "sidebar_skills_name": "Skills",
+    "sidebar_experience_name": "Experience",
+    "projects_thisWebsite_title": "This website",
+    "projects_thisWebsite_description": "This website is the first <a href=\"#frontend-skill\" class=\"reference\">frontend</a> that i developed by myself. I developed it with Svelte 5."
+
 }

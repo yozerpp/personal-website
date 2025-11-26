@@ -1,4 +1,9 @@
 {
 	"$schema": "https://inlang.com/schema/inlang-message-format",
-    "pp_alt": "Profil Fotosu"
+    "pp_alt": "Profil Fotosu",
+    "sidebar_projects_name": "Projeler",
+    "sidebar_skills_name": "Beceriler",
+    "sidebar_experience_name": "Eğitim & Tecrübe",
+    "projects_thisWebsite_title": "Bu website",
+    "projects_thisWebsite_description": "Bu proje tamamen benim geliştirdiğim ilk <a href=\"#frontend-skill\" class=\"reference\">frontend</a> projem. Svelte 5 ile geliştirdim."
 }
