@@ -5,7 +5,10 @@ const config = {
     kit:
         {
             adapter: adapter(),
-            alias: {"@/*": "./src/lib/*"},
+            alias: {
+                "@/*": "./src/lib/*",
+                "$paraglide": "./src/paraglide"
+            },
         }
 };
 
