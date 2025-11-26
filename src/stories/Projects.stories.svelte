@@ -88,26 +88,6 @@
                 description:
                     "Transition preset applied to each slide. Use 'zoom-slide' for a zoom-out/in effect while scrolling.",
             },
-            rootClass: {
-                control: { type: "text" },
-                description: "Additional classes merged onto the Carousel root container.",
-            },
-            contentClass: {
-                control: { type: "text" },
-                description: "Classes applied to the embla track element.",
-            },
-            itemClass: {
-                control: { type: "text" },
-                description: "Classes merged onto each carousel slide wrapper.",
-            },
-            prevClass: {
-                control: { type: "text" },
-                description: "Classes forwarded to the previous button when using the default control.",
-            },
-            nextClass: {
-                control: { type: "text" },
-                description: "Classes forwarded to the next button when using the default control.",
-            },
             slides: {
                 control: false,
                 description: "Snippet array rendered inside the Carousel content.",
@@ -116,18 +96,9 @@
                 control: false,
                 description: "Two-way bound Embla API instance exposed by Carousel.Root.",
             },
-            opts: {
-                control: false,
-                description: "Embla options forwarded to the underlying carousel instance.",
-            },
         },
         args: {
-            rootClass: "w-full max-w-5xl mx-auto",
-            contentClass: "md:h-[520px]",
-            itemClass: "md:px-4",
-            prevClass: "left-2 md:left-6 bg-slate-900/80 text-white",
-            nextClass: "right-2 md:right-6 bg-slate-900/80 text-white",
-            opts: { loop: true, align: "center" },
+            // class: "w-full max-w-5xl mx-auto",
             slides: projectSlides,
         },
     });
@@ -164,22 +135,14 @@
     </a>
 {/snippet}
 
-{#snippet projectSlide({ project })}
+{#snippet projectSlide(project)}
     <ProjectComponent
         videoUrl={project.videoUrl}
-        classNames="bg-white/80 rounded-2xl shadow-lg backdrop-blur"
+        class="bg-white/80 rounded-2xl shadow-lg backdrop-blur"
         title={{ snippet: titleSnippet, args: { name: project.name, tagline: project.tagline } }}
         description={{ snippet: descriptionSnippet, args: { summary: project.summary, highlights: project.highlights } }}
         footer={project.cta ? { snippet: footerSnippet, args: project.cta } : undefined}
     />
 {/snippet}
 
-<Story name="Slide Animation" />
-<Story
-    name="Contained Layout"
-    args={{
-        rootClass: "w-full max-w-4xl mx-auto",
-        contentClass: "md:h-[460px]",
-        itemClass: "md:px-2",
-    }}
-/>
+<Story name="Defaul" />
