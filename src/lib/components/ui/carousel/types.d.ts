@@ -19,7 +19,7 @@ export type CarouselAnimationParams = {
 };
 
 export type CarouselProps = {
-    controls: CarouselControls;
+    controls?: CarouselControls;
     slides: SnippetHolder[];
     class?: string;
     orientation?: "horizontal" | "vertical";
