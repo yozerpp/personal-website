@@ -13,14 +13,14 @@
 
 </script>
 
-<header class="container px-2 pt-1 pb-2 md:px-5 md:pt-4 md:pb-3 flex flex-row justify-center items-end gap-[7%]" >
+<div class="px-2 pt-1 pb-2 md:px-5 md:pt-4 md:pb-3 flex flex-row justify-center items-end gap-3 lg:gap-10" >
     <div in:avatarAnimation>
         <Avatar.Root class="size-[15vw] lg:size-[10vw]">
             <Avatar.Image src={photoUrl} alt={m.pp_alt()}/>
             <Avatar.Fallback>{m.pp_alt()}</Avatar.Fallback>
         </Avatar.Root>
     </div>
-    <div>
+    <div class="ms-10 md:ms-15 lg:ms-20">
         <h3 in:headerAnimation={{deleteAfter:true}} class="mb-2 md:mb-5 text-2xl md:text-3xl lg:text-6xl font-extrabold font-sans">{name}</h3>
     </div>
-</header>
+</div>

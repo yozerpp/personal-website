@@ -1,5 +1,5 @@
 <script>
-    import Header from './header-content.svelte'
+    import HeaderContent from './header-content.svelte'
     import {cn, getColorString} from "@/utils.js";
     /** @type import('./types').HeaderProps */
     let {
@@ -14,7 +14,7 @@
 
 </script>
 
-<div style:background-image={backgroundImage} class={cn("sticky top-0 text-white font-[lato-heavy] w-screen rounded-b-[48px] border-2 border-accent/25 drop-shadow-xl shadow-black/30 backdrop-blur-md", ...(Array.isArray(classNames) ? classNames : [classNames]), ...colorClass)}>
-    <Header {...properties}/>
-</div>
+<header style:background-image={backgroundImage} class={cn("sticky w-full top-0 text-white font-[lato-heavy] rounded-b-[48px] border-2 border-accent/25 drop-shadow-xl shadow-black/30 backdrop-blur-md", ...(Array.isArray(classNames) ? classNames : [classNames]), ...colorClass)}>
+    <HeaderContent {...properties}/>
+</header>
 
