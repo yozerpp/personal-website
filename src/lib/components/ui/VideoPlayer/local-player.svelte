@@ -1,14 +1,15 @@
 <script>
     import {cn} from "@/utils.js";
 
-    /** @type VideoPlayerProps */
+    /**@type import('./types').VideoPlayerProps */
     let {
         videoUrl,
-        classNames = null,
+        name,
+        class: classNames = null,
     } = $props();
 </script>
 
-<video muted class={"aspect-video h-[30vh] " +  (classNames??"")} autoplay={true} loop={true}>
+<video title="{name ?? 'Project'} Live Demo" autoplay loop muted class={"aspect-video h-[30vh] " +  (classNames??"")}>
     <track src={null} kind="captions">
     <source src={videoUrl.toString()} type="video/mp4" />
 </video>
