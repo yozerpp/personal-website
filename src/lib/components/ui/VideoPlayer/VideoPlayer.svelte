@@ -2,18 +2,30 @@
     import YoutubePlayer from './youtube-player.svelte'
     import LocalPlayer from './local-player.svelte'
     import {AspectRatio} from "@/components/ui/aspect-ratio/index.js";
+    import {cn} from "@/utils.js";
 
-    /** @type VideoPlayerProps */
+    /** @type import('./types').VideoPlayerProps */
     let {
         videoUrl,
-        classNames = null
+        class: classNames,
+        name,
+        aspectRatio,
     } = $props();
 </script>
-
-<AspectRatio ratio={4/3}>
+{#snippet players(videoUrl, name)}
     {#if videoUrl.toString().startsWith('http')}
-        <YoutubePlayer {videoUrl} {classNames} />
+        <YoutubePlayer {name} {videoUrl}/>
     {:else}
-        <LocalPlayer {videoUrl} {classNames} />
+        <LocalPlayer {name} {videoUrl} />
     {/if}
+{/snippet}
+
+{#if aspectRatio}
+<AspectRatio class={classNames} ratio={aspectRatio}>
+    {@render players(videoUrl, name)}
 </AspectRatio>
+{:else}
+    <div class={cn("w-full h-full", classNames)}>
+        {@render players(videoUrl, name)}
+    </div>
+{/if}
