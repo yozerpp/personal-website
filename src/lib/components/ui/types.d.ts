@@ -8,7 +8,7 @@ export type Color = string | number;
 export type ColorWithOpacity = {color: Color, opacity?: number}
 export type GradientColor = {direction: 't'| 'tr' | 'r' | 'br'| 'b'| 'bl' | 'l' |  'tl',from: Color | ColorWithOpacity, via?: Color | ColorWithOpacity, to: Color | ColorWithOpacity}
 export type SnippetHolder = {
-    args?: Record<string, unknown>;
+    args?: any;
     snippet: Snippet<[any]>;
 };
 export type CssProp=string | {
@@ -16,3 +16,10 @@ export type CssProp=string | {
     md?: string,
     lg?:string,
 }
+export type AnchorProp = {
+    text: string,
+    href?: string,
+    onclick?: string | function(MouseEvent):void,
+    download?: boolean,
+    class?:string
+};

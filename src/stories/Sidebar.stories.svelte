@@ -1,6 +1,6 @@
 <script module>
     import {defineMeta} from "@storybook/addon-svelte-csf";
-    import Sidebar from "@/components/ui/sidebar/Sidebar.svelte";
+    import Sidebar from "@/components/ui/Sidebar/Sidebar.svelte";
 
     import designIcon from "./assets/styling.png";
     import guideIcon from "./assets/tutorials.svg";
@@ -8,7 +8,7 @@
     import testingIcon from "./assets/testing.png";
     import libraryIcon from "./assets/addon-library.png";
 
-    /**@type import('$lib/components/ui/sidebar/types').SidebarElement[] */
+    /**@type import(' */
     const studioLibrary = [
         {
             name: "Design Systems",

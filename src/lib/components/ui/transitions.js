@@ -1,13 +1,14 @@
 import {linear} from "svelte/easing";
 
-const caretTemplate = document.createElement("span");
-caretTemplate.innerHTML = '_';
-caretTemplate.className = 'caret';
-caretTemplate.style.display = 'inline-flex'
+
 /**@param {string} fontSizeHint
  * @param {string} maxHeightHint
  * @return HTMLElement*/
 function createCaret(fontSizeHint = '', maxHeightHint = ''){
+    const caretTemplate = document.createElement("span");
+    caretTemplate.innerHTML = '_';
+    caretTemplate.className = 'caret';
+    caretTemplate.style.display = 'inline-flex'
     /**@type HTMLElement*/
     const ret = caretTemplate.cloneNode(true)
     const m = fontSizeHint.match(/^(\d+)(px|em|rem)$/);
@@ -18,16 +19,17 @@ function createCaret(fontSizeHint = '', maxHeightHint = ''){
 /**
  *
  * @param {Element} node
- * @param {{delay: number, duration: number, deleteAfter?: boolean, easing: function(number):number}} params
+ * @param {{delay: number, speed: number, duration: number | undefined, deleteAfter?: boolean, easing: function(number):number}} params
  * @param {{direction:'in' | 'out' |'both'}} options
  * @return import("svelte/transition").TransitionConfig
  */
-
-export function typewriter(node, {delay = 0, speed = 1, deleteAfter = false, easing = linear}, options){
+/**@typedef {{node: Node, content: string, ratio: number, oldStyle: {height: string, width: string}}} nodeWithPropsType */
+export function typewriter(node, {delay = 0, speed = 1, duration = undefined, deleteAfter = false, easing = linear}, options){
+    const isIn = !options?.direction || options.direction !== 'out';
     const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT, null)
-    /**@type {{node: Node, content: string, ratio: number, oldStyle: {height: string, width: string}}[]}*/
+    /**@type {nodeWithPropsType[]}*/
     const textNodes = [];
-    /** @type Node*/
+    /**@type Node*/
     let node1;
     const re = new RegExp("^[\\n\\s\\t]+$")
     while ((node1 = walker.nextNode())) {
@@ -43,32 +45,42 @@ export function typewriter(node, {delay = 0, speed = 1, deleteAfter = false, eas
         // else node1.parentElement.style.display = 'inline-block';
         node1.parentElement.style.minWidth = node1.parentElement.clientWidth + 'px';
         node1.parentElement.style.minHeight = node1.parentElement.clientHeight + 'px';
-        node1.textContent = '';
+        if(isIn)
+        node1.textContent = null;
     }
     const totalLength = textNodes.map(n=>n.content.length).reduce((previousValue, currentValue)=>previousValue + currentValue,0);
-    /** @type {{node: Node, content: string, ratio:number}[]} */
     textNodes.forEach(t=>t.ratio = t.content.length / totalLength);
-    let nodeWithProps = textNodes.shift();
-    nodeWithProps.node.after(createCaret(getComputedStyle(nodeWithProps.node.parentElement).fontSize, nodeWithProps.node.parentElement.style.minHeight))
-    let oldRatios = 0;
-    return options.direction !=='out'
-        ? {
+    /**@type {function(): nodeWithPropsType | undefined} */
+    const iteratorMethod = isIn ? Array.prototype.shift : Array.prototype.pop;
+    const sign = isIn ? 1 : -1;
+    const begin = isIn ? 0 : 1;
+    /**@type {function(number,number):boolean}*/
+    const comp = isIn ? ((a, b)=>a>=b) : ((a,b)=>a<=b);
+    /**@type {function(number,number):boolean}*/
+    const comp2 = isIn ? ((a, b)=>a>b) : ((a,b)=>a<b)
+    let visibleRatios = isIn ? 0 : 1;
+    let nodeWithProps = iteratorMethod.call(textNodes);
+    let cursorInited = false;
+    return{
             delay,
-            duration: totalLength * 10 / (speed!==0?speed:1),
+            duration: duration ?? (totalLength * 10 / (speed!==0?speed:1)),
             easing,
             tick: (t, u) => {
                 if(!nodeWithProps) return;
-                nodeWithProps.node.textContent = nodeWithProps.content.slice(0, Math.min(nodeWithProps.content.length, Math.round(nodeWithProps.content.length * (t-oldRatios) /nodeWithProps.ratio )))
-                if(t >= nodeWithProps.ratio + oldRatios){
+                if(!cursorInited && comp2(t, begin)){
+                    nodeWithProps.node.after(createCaret(getComputedStyle(nodeWithProps.node.parentElement).fontSize, nodeWithProps.node.parentElement.style.minHeight))
+                    cursorInited = true;
+                }
+                nodeWithProps.node.textContent = nodeWithProps.content.slice(0, Math.min(nodeWithProps.content.length, Math.round(nodeWithProps.content.length * (t-visibleRatios) / nodeWithProps.ratio )))
+                if(comp(t,(sign * nodeWithProps.ratio) + visibleRatios)) {
                     if(textNodes.length > 0 || deleteAfter) nodeWithProps.node.nextSibling.remove();
                     nodeWithProps.node.parentElement.style.minHeight = nodeWithProps.oldStyle.height.length === 0 ? nodeWithProps.oldStyle.height + 'px' : '';
                     nodeWithProps.node.parentElement.style.minWidth = nodeWithProps.oldStyle.width.length === 0 ? nodeWithProps.oldStyle.width + 'px' : '';
-                    oldRatios += nodeWithProps.ratio;
-                    nodeWithProps = textNodes.shift();
+                    visibleRatios += sign * nodeWithProps.ratio;
+                    nodeWithProps = iteratorMethod.call(textNodes);
                     if(nodeWithProps)
                     nodeWithProps.node.after(createCaret(getComputedStyle(nodeWithProps.node.parentElement).fontSize, nodeWithProps.node.parentElement.style.minHeight));
                 }
             }
-        }
-        : {duration: 0};
+        };
 }

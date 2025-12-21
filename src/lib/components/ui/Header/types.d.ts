@@ -6,5 +6,7 @@ export type HeaderProps = {
     class?: string | string[],
     photoUrl : string,
     backgroundImage?: string,
-    name : string
+    name : string,
+    offsetHeight?: number,
+    class: string
 };

@@ -1,5 +1,5 @@
 <script module>
-    import Timeline from '$lib/components/ui/timeline/Timeline.svelte';
+    import Timeline from '@/components/ui/timeline/Timeline.svelte';
     import {defineMeta} from "@storybook/addon-svelte-csf";
 
     const {Story} = defineMeta({

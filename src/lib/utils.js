@@ -1,6 +1,30 @@
 import { clsx, } from "clsx";
 import { twMerge } from "tailwind-merge";
+import {getLocale, setLocale} from '$paraglide/runtime.js'
 
+/**@param {string} newLocale*/
+export function switchLanguage(newLocale) {
+    debugger
+    setLocale(newLocale.toLowerCase(),{reload:true})
+}
+/**@return {string}*/
+export function getLanguage(){
+    return getLocale()
+}
+/**@param {import('svelte').Snippet<[any]>} snippet
+ * @param {object} args
+ * @constructor
+ */
+export function SnippetHolder(snippet, args){
+    return {snippet, args};
+}
+
+export class SectionIntersectedEvent extends CustomEvent {
+    static name = "sectionintersected";
+    constructor(id) {
+        super("sectionintersected",{detail: {id}, bubble:false, cancelable:true});
+    }
+}
 export function cn(...inputs) {
 	return twMerge(clsx(inputs));
 }

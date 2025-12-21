@@ -8,4 +8,5 @@ export type TimelineProps={
     elements: TimelineElement[],
     separatorLength?: number,
     class?: string,
+    title?: SnippetHolder | string,
 }

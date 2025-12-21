@@ -1,6 +1,5 @@
 <script>
     import {onMount} from "svelte";
-    import {Separator} from "@/components/ui/separator/index.js";
     import {cn} from "@/utils.js";
 
     /**@type import('./types').TimelineProps*/
@@ -8,56 +7,85 @@
         elements,
         separatorLength = 0,
         class: className,
+        title,
     } = $props()
     /**@typedef {{header: HTMLElement | null, padding: number, content: HTMLElement, item: HTMLElement, index: number}} itemLive*/
     /**@type {itemLive[]}*/
-    let items = [];
+    const items = [];
     /**@type HTMLElement*/
     let root = null;
-    /**@param {itemLive} arg*/
-    function adjustTitlePadding({item, header, index, padding}){
-        let ret;
-        item.style.setProperty('--top', (ret = index * ( (header!=null ? (header.offsetHeight + separatorLength) : 0) + padding ) ) + 'px');
+    /**@type HTMLElement*/
+    let titleElement;
+    /**@param {itemLive} arg
+     * @return {number} header size
+     * */
+    function adjustTop(sum, {item, header, padding}){
+        item.style.setProperty('top', sum + 'px');
         // if(index === elements.length - 1)
         //     return item.clientHeight;
-        return ret;
+        return (header!=null ? (header.offsetHeight + separatorLength) : 0) + padding;
     }
     function resize(){
         if(!items.length) return
-        let sum = 0;
+        let headerSum = titleElement?.offsetHeight ?? 0;
+        root.style.gap = root.parentElement.clientHeight * 4/5 + 'px';
         items.forEach(i=>{
             i.padding = parseFloat(getComputedStyle(i.item).paddingTop.replace('px', ''))
-            sum+=adjustTitlePadding(i);
+            headerSum+=adjustTop(headerSum, i);
         })
-        root.style.paddingBottom = 'calc(100dvh - ' + (sum/2) + 'px)'
+        const trackPadding = (root.parentElement.clientHeight - (headerSum - items[items.length - 1].header.offsetHeight) - items[items.length - 1].item.clientHeight);
+        if(trackPadding >= 0) root.style.paddingBottom = trackPadding + 'px';
+        else{
+            root.parentElement.style.height = (-trackPadding + parseFloat(getComputedStyle(root.parentElement).height.replace('px', '')) ) +  'px';
+            // const maxScroll = root.scrollHeight - trackPadding;
+            // let prevScrollTop = root.scrollTop;
+            // root.addEventListener('scroll', ev=>{
+            //     console.log("balls")
+            //     if(root.scrollTop > maxScroll){
+            //         ev.stopPropagation()
+            //         ev.preventDefault();
+            //     }else prevScrollTop = root.scrollTop;
+            // });
+        }
         // items.forEach(i=>{
         //     i.item.style.setProperty('view-timeline-inset', (i.item.offsetTop/root.clientHeight*100).toString() + '% -60px')
         // })
     }
     onMount(()=>{
+        for (const item of root.children){
+            items.push({item});
+        }
+        console.log(items);
+        items.forEach((i)=>{
+            i.header= i.item.querySelector("[data-timeline-slot='header']")
+            i.content = i.item.querySelector("[data-timeline-slot='content']") ?? i.item;
+        })
         resize();
         const obs = new ResizeObserver(()=>{
             resize();
         })
         obs.observe(root);
-        return ()=>obs.disconnect();
+        return obs.disconnect;
     })
+    function bindNode(node, index){
+        items[index].item = node;
+    }
 </script>
 
-<div class="h-[100dvh] overflow-auto p-0 root">
-    <ul bind:this={root} class="pt-[100dvh] grid relative grid-rows-{elements.length} place-items-center gap-[70dvh]" style="--pb: {2/elements.length * 100}%">
-        {#each elements as elem, i (elem)}
-            {@const _ = items[i] = {index: i, item: null, header: null, content: null} }
-            <li bind:this={items[i].item} class={cn("sticky top-[var(--top)] timeline-item border-2 border-accent-foreground/50 bg-yellow-400 p-0 rounded-xl  z-[var(--i)]", className)} style="--i: {i};">
-                {#if elem.header}
-                    <div bind:this={items[i].header} >
-                        {@render elem.header.snippet(elem.header.args)}
-                    </div>
-                    <Separator class="text-black"/>
-                {/if}
-                <div bind:this={items[i].content}>
-                    {@render elem.content.snippet(elem.content.args)}
-                </div>
+<div class="h-[30dvh] md:h-[60dvh] lg:h-[70dvh] overflow-auto p-0 root">
+    {#if title}
+        <div bind:this={titleElement} class="text-center sticky top-0 py-6">
+            {#if typeof title ==='string'}
+                    <h1 class="text-3xl md:text-4xl lg:text-6xl xl:text-7xl font-['Inter'] text-accent text-shadow-md text-shadow-accent-foreground">{@html title}</h1>
+            {:else}
+                {@render title.snippet(title.args)}
+            {/if}
+        </div>
+    {/if}
+    <ul bind:this={root} class="relative pt-[100%] grid grid-rows-{elements.length} justify-items-center items-start">
+        {#each elements as elem, i (i)}
+            <li class={cn("h-full drop-shadow-lg drop-shadow-muted-foreground sticky", className)} style="z-index: {i};">
+                {@render elem.content.snippet(elem.content.args)}
             </li>
         {/each}
     </ul>
@@ -96,7 +124,7 @@
         border-left-width: 2px;
         border-image: repeating-linear-gradient(
                 to bottom,
-                black 0px 10px,
+                var(--color-accent) 0px 10px,
                 transparent 0px 50px
         ) 1;
     }

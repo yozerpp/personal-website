@@ -1,6 +1,6 @@
 <script>
     import {defineMeta} from "@storybook/addon-svelte-csf";
-    import YoutubePlayer from "@/components/ui/VideoPlayer/youtube-player.svelte";
+    import YoutubePlayer from "@/components/ui/video-player/youtube-player.svelte";
 
     const {Story} = defineMeta({
         title: "Components/YoutubePlayer",

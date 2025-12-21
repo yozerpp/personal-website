@@ -1,9 +1,9 @@
 <script module>
 	import { defineMeta } from "@storybook/addon-svelte-csf";
     import * as Card from "@/components/ui/card/index.js";
-	import CarouselComponent from "@/components/ui/carousel/Carousel.svelte";
+	import CarouselComponent from "@/components/ui/project-carousel/Carousel.svelte";
 	const { Story } = defineMeta({
-		title: "Components/Carousel/Navigable",
+		title: "Components/Carousel/Terminal",
 		component: CarouselComponent,
 		tags: ["autodocs"],
 		parameters: {

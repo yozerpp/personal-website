@@ -1,26 +1,38 @@
 <script>
     import * as Carousel from './index.js';
-    import {cn, toStyleString} from "@/utils.js";
+    import {cn} from "@/utils.js";
     import {onMount} from "svelte";
     /**@type import('./types').CarouselStreamProps */
     let {
         controls = $bindable(),
         slides,
         class: className,
-        orientation = "horizontal",
-        animation,
-        speed = 3,
-        width
+        speed = 2.5,
     } = $props();
-    let widthString = $derived(toStyleString(width, 'w'));
+    /**@type HTMLElement */
+    let carousel=null;
+    const initialLength = slides.length;
+    /**@type number*/
+    let windowWidth = $state();
+    const isLg = $derived(windowWidth >= 1024);
+    const scrollGetter = $derived( isLg ? ()=>carousel.scrollLeft : ()=>carousel.scrollTop);
+    const scrollSetter = $derived(isLg ? (v)=> {
+        carousel.scrollLeft = v
+    } : (v)=> {
+        carousel.scrollTop = v
+    });
+    const getScrollLength = $derived(isLg ? ()=>carousel.scrollWidth - carousel.clientWidth:()=>carousel.scrollHeight - carousel.clientHeight);
+    const getMouseMovement = $derived(isLg ? (ev)=>ev.movementX : (ev)=>ev.movementY);
     const autoScroll = $derived(()=>{
-        slide.scrollLeft+= speed;
+        scrollSetter(scrollGetter() + speed);
         loopId = requestAnimationFrame(autoScroll);
     })
-    /**@type HTMLElement */
-    let slide=null;
     /**@type {HTMLElement[]}*/
     let items = Array(slides.length).fill(null);
+    controls={
+        startScroll,
+        stopScroll
+    }
     /**@type {number |null}*/
     let loopId = null;
     function startScroll(){
@@ -33,34 +45,47 @@
         loopId = null;
     }
     onMount(()=>{
-        startScroll();
         return stopScroll;
     })
     /**@type {number}*/
     let prevScroll = 0;
-    function onscroll(){
-        let add,startIdx,step;
-        let pScroll = prevScroll;
-        prevScroll = slide.scrollLeft;
-        if(slide.scrollLeft > pScroll && slide.scrollLeft >= (slide.scrollWidth - slide.clientWidth) * 2/3){
-            add = Element.prototype.after;
-            startIdx = 0;
-            step = 1;
-        } else if(slide.scrollLeft <= pScroll && slide.scrollLeft <= (slide.scrollWidth - slide.clientWidth) / 3){
-            add = Element.prototype.before;
-            startIdx = items.length-1;
-            step = -1;
+    function onscrollend(){
+        let addNode,startIdx,step,addArray;
+        const currentScroll = scrollGetter();
+        if(currentScroll > prevScroll && currentScroll >= getScrollLength() * 3/4){
+            slides = [...slides, ...slides.slice(0, initialLength)];
+            // addNode = Element.prototype.after;
+            // addArray = Array.prototype.push;
+            // startIdx = ()=>0;
+            // step = 1;
         }
+        // else if(slide.scrollLeft <= pScroll && slide.scrollLeft <= (slide.scrollWidth - slide.clientWidth) / 4){
+        //     addNode = Element.prototype.before;
+        //     addArray = Array.prototype.unshift;
+        //     startIdx = ()=>items.length-1;
+        //     step = -1;
+        // }
         else return;
-        requestAnimationFrame(()=>{
-            for(let i = startIdx, adj = items[items.length - startIdx-1];i < slides.length; i+=step){
-                const e = items[i].cloneNode(true)
-                add.call(adj, e);
-                adj = e;
-            }
-            if(items.length >= 3 * slides.length)
-                items.splice(step === 1?0:(items.length - slides.length), slides.length).forEach(del=>del.remove());
-        })
+        prevScroll = currentScroll;
+        // function doAdd(i, adj){
+        //     const e = items[i].cloneNode(true)
+        //     addNode.call(adj.val, e);
+        //     adj.val = e;
+        //     addArray.call(items, e);
+        // }
+        // requestAnimationFrame(()=>{
+        //     for(let i = startIdx(), adj = {val:items[items.length - startIdx() - 1]};i < slides.length; i+=step){
+        //         doAdd(i, adj)
+        //     }
+            // if(items.length >= 3 * slides.length){
+                // let sum=0;
+                // items.splice(step === 1?0:(items.length - slides.length), slides.length).forEach((del,i)=> {
+                    // sum += -step * del.offsetWidth;
+                    // del.remove()
+                // });
+                // slide.scrollLeft += sum;
+            // }
+        // })
     }
     function onmouseenter(){
         stopScroll();
@@ -75,7 +100,7 @@
     function onmousemove(ev){
         if(!dragging) return
         ev.preventDefault();
-        slide.scrollLeft -= ev.movementX
+        scrollSetter(scrollGetter() - getMouseMovement(ev));
     }
     /**@param {MouseEvent} ev*/
     function onmousedown(ev){
@@ -88,12 +113,15 @@
         dragging = !(dragging && ev.button === 0);
     }
 </script>
-<Carousel.Root class={cn("w-full px-2", className)} style={widthString}>
-    <Carousel.Content {onscroll} {onmouseenter}  {onmouseup} {onmousemove} {onmousedown} {onmouseleave} bind:ref={slide} class="gap-5 cursor-pointer grid px-0 overflow-x-hidden grid-flow-col auto-cols-[var(--w)] {width.md?'md:auto-cols-[var(--w-md)]':''} {width.lg?'lg:auto-cols-[var(--w-lg)]':''}">
-            {#each slides as slide,q (slide)}
-                {@const idx = q}
-                <Carousel.Item bind:ref={items[q]} data-batch={0} data-index={idx}>
-                    {@render slide.snippet(slide.args)}
+<svelte:window bind:innerWidth={windowWidth}/>
+<Carousel.Root class={cn("size-full", className)} >
+    <Carousel.Content bind:ref={carousel} ondragstart={onmousedown} ondragend={onmouseup} {onscrollend} {onmouseenter} {onmouseup} {onmousemove} {onmousedown} {onmouseleave}
+            class="overflow-y-hidden h-full w-auto lg:h-auto lg:w-full lg:overflow-y-auto lg:overflow-x-hidden
+     px-0 gap-5 snap-none static grid cursor-pointer grid-flow-row auto-rows-max lg:grid-cols-none lg:grid-rows-[auto_auto_auto] lg:grid-flow-col lg:auto-rows-auto lg:auto-cols-max"
+    style="overflow-anchor: none !important;">
+            {#each slides as slide,q(q)}
+                <Carousel.Item class="lg:w-auto lg:grid lg:grid-rows-subgrid lg:row-span-full" style>
+                    {@render slide.content.snippet(slide.content.args)}
                 </Carousel.Item>
             {/each}
     </Carousel.Content>

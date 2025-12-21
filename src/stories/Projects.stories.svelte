@@ -1,6 +1,6 @@
 <script module>
     import { defineMeta } from "@storybook/addon-svelte-csf";
-    import CarouselComponent from "@/components/ui/carousel/Carousel.svelte";
+    import CarouselComponent from "@/components/ui/project-carousel/Carousel.svelte";
     import ProjectComponent from "@/components/ui/Project/Project.svelte";
 
     const projectData = [
