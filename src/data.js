@@ -1,12 +1,9 @@
 import {m} from '/src/paraglide/messages.js';
+import {makeId} from "@/utils.js";
 import {createRawSnippet} from "svelte";
 import {AppWindow, BriefcaseBusiness, PersonStanding, Wrench} from "@lucide/svelte";
 /**@import {ProjectProps} from '$lib/components/ui/Project/types'*/
 
-/**@param {string} name*/
-function makeId(name){
-    return name.replace(/\s+/,'_').toLowerCase();
-}
 /**@param {string} seperatedString*/
 function parseBulletedDescription(seperatedString, separator= '|', cls = null){
     const sep = seperatedString.split(separator);
@@ -50,6 +47,10 @@ function bulletedDescription(/**@type string*/description, /**@type {string[] | 
 function clickToProjectHref(name){
     document.getElementById('projects').scrollIntoView({behavior: 'smooth', block: 'start', inline: 'nearest'});
     document.getElementById("projectTab_" + makeId(name)).dispatchEvent(new Event('click', {bubbles:true, cancelable: true}));
+}
+function clickToExperienceHref(name){
+    document.getElementById('experiences').scrollIntoView({behavior: 'smooth', block: 'start', inline: 'nearest'});
+    document.getElementById(makeId(name)).scrollIntoView({behavior: 'smooth', block: 'end', inline: 'nearest'});
 }
 export const sidebarElements = [
     {name: m.about_title(), href: `#about`, image: PersonStanding},
@@ -100,7 +101,7 @@ export const experiences = [
         }),
         footer: [
             {href: 'https://www.kivierp.com/', text: m.experience_kivi_website()},
-            {href:'#project_' + makeId(m.projects_ecommerce_platform_title()), text: m.projects_ecommerce_platform_title()},
+            {onclick: clickToProjectHref.bind(null, m.projects_ecommerce_platform_title()), text: m.projects_ecommerce_platform_title()},
         ]
     }
 ];
@@ -114,19 +115,19 @@ export const projects = [
     {
         title: m.projects_ecommerce_platform_title(),
         description: parseBulletedDescription(m.projects_ecommerce_platform_description(), '|', 'list-none'),
-        footer: [{href: 'demo/ecommerce-platform', text: m.projects_demo_generic()}, {href: 'github.com/yozerpp/ecommerce_kivi', text: m.project_repository_generic()}]
+        footer: [{href: 'demo/ecommerce-sandbox/', text: m.projects_demo_generic()}, {href: 'https://github.com/yozerpp/ecommerce_kivi', text: m.project_repository_generic()}]
     },
-    {title: m.projects_nutdetector_title(), description: m.projects_nutdetector_description(), footer: [{href: 'github.com/yozerpp/nutdetector', text:m.project_repository_generic()}]},
-    {title: m.projects_ecommerce_api_title(),description: m.projects_ecommerce_api_description(),footer:[{href: 'demo/ecommerce-api', text: m.projects_demo_generic()},{href: 'github.com/yozerpp/ecommerce-backend', text:m.project_repository_generic()}] },
+    {title: m.projects_nutdetector_title(), description: m.projects_nutdetector_description(), footer: [{href: 'https://github.com/yozerpp/nutdetector', text:m.project_repository_generic()}]},
+    {title: m.projects_ecommerce_api_title(),description: m.projects_ecommerce_api_description(),footer:[{href: 'demo/ecommerce-api/', text: m.projects_demo_generic()},{href: 'github.com/yozerpp/ecommerce-backend', text:m.project_repository_generic()}] },
 ];
 /**@type {import('@/components/ui/Skill/types.js').SkillProps[]}*/
 export const skills = [
-    // { name: 'hidden', expertise: 1 },
+    { name: 'hidden', expertise: 1, class:"opacity-0" },
     {
         name: "Full-Stack Development",
         expertise: 2,
         references: [
-            { text: m.experience_kivi(), href: '#experiences' },
+            { text: m.experience_kivi(), onclick: clickToExperienceHref.bind(null, m.experience_kivi()) },
             { text: m.projects_ecommerce_platform_title(), onclick: clickToProjectHref.bind(null, m.projects_ecommerce_platform_title()) }
         ]
     },
@@ -134,7 +135,7 @@ export const skills = [
         name: "Back-End Web Development",
         expertise: 3,
         references: [
-            { text: m.experience_ktu(), href: '#experiences' },
+            { text: m.experience_ktu(), onclick: clickToExperienceHref.bind(null, m.experience_ktu()) },
             { text: m.projects_ecommerce_api_title(), onclick: clickToProjectHref.bind(null, m.projects_ecommerce_api_title()) },
             {text: m.projects_ecommerce_platform_title(), onclick: clickToProjectHref.bind(null, m.projects_ecommerce_platform_title())}
         ]
@@ -143,7 +144,7 @@ export const skills = [
         name: "ASP.NET",
         expertise: 3,
         references: [
-            { text: m.experience_kivi(), href: '#experiences' },
+            { text: m.experience_kivi(), onclick: clickToExperienceHref.bind(null, m.experience_kivi()) },
             { text: m.projects_ecommerce_platform_title(), onclick: clickToProjectHref.bind(null, m.projects_ecommerce_platform_title()) }
         ]
     },
@@ -151,15 +152,15 @@ export const skills = [
         name: "Spring Framework",
         expertise: 3,
         references: [
-            { text: m.experience_biltas(), href: '#experiences' }
+            { text: m.experience_biltas(), onclick: clickToExperienceHref.bind(null, m.experience_biltas()) }
         ]
     },
     {
         name: "Java",
         expertise: 3,
         references: [
-            { text: m.experience_biltas(), href: '#experiences' },
-            { text: m.experience_ktu(), href: '#experiences' },
+            { text: m.experience_biltas(), href: clickToExperienceHref.bind(null, m.experience_biltas()) },
+            { text: m.experience_ktu(), onclick: clickToExperienceHref.bind(null, m.experience_ktu()) },
             { text: m.projects_ecommerce_api_title(), onclick: clickToProjectHref.bind(null, m.projects_ecommerce_api_title()) }
         ]
     },
@@ -174,14 +175,14 @@ export const skills = [
         name: "Desktop Application Development",
         expertise: 2,
         references: [
-            { text: m.experience_biltas(), href: '#experiences' }
+            { text: m.experience_biltas(), onclick: clickToExperienceHref.bind(null, m.experience_biltas()) }
         ]
     },
     {
         name: "MySQL",
         expertise: 2,
         references: [
-            { text: m.experience_ktu(), href: '#experiences' },
+            { text: m.experience_ktu(), onclick: clickToExperienceHref.bind(null, m.experience_ktu()) },
             { text: m.projects_ecommerce_api_title(), onclick: clickToProjectHref.bind(null, m.projects_ecommerce_api_title()) }
         ]
     },
@@ -189,7 +190,7 @@ export const skills = [
         name: "SQL Server",
         expertise: 2,
         references: [
-            { text: m.experience_kivi(), href: '#experiences' },
+            { text: m.experience_kivi(), onclick: clickToExperienceHref.bind(null, m.experience_kivi()) },
             { text: m.projects_ecommerce_platform_title(), onclick: clickToProjectHref.bind(null, m.projects_ecommerce_platform_title()) }
         ]
     },
@@ -207,7 +208,7 @@ export const skills = [
         name: "C++",
         expertise: 2,
         references: [
-            { text: m.experience_ktu(), href: '#experiences' },
+            { text: m.experience_ktu(), onclick: clickToExperienceHref.bind(null, m.experience_ktu()) },
             { text: m.projects_nutdetector_title(), onclick: clickToProjectHref.bind(null, m.projects_nutdetector_title()) }
         ]
     },
@@ -215,7 +216,7 @@ export const skills = [
         name: "Machine Learning",
         expertise: 1,
         references: [
-            { text: m.experience_ktu(), href: '#experiences' },
+            { text: m.experience_ktu(), onclick: clickToExperienceHref.bind(null, m.experience_ktu()) },
             { text: m.projects_nutdetector_title(), onclick: clickToProjectHref.bind(null, m.projects_nutdetector_title()) }
         ]
     },
@@ -223,7 +224,7 @@ export const skills = [
         name: "Image Processing",
         expertise: 1,
         references: [
-            { text: m.experience_ktu(), href: '#experiences' },
+            { text: m.experience_ktu(), onclick: clickToExperienceHref.bind(null, m.experience_ktu()) },
             { text: m.projects_nutdetector_title(), onclick: clickToProjectHref.bind(null, m.projects_nutdetector_title()) }
         ]
     },
@@ -238,21 +239,21 @@ export const skills = [
         name: "Compiler Design",
         expertise: 2,
         references: [
-            { text: m.experience_ktu(), href: '#experiences' }
+            { text: m.experience_ktu(), onclick: clickToExperienceHref.bind(null, m.experience_ktu()) },
         ]
     },
     {
         name: "Scrum",
         expertise: 2,
         references: [
-            { text: m.experience_kivi(), href: '#experiences' }
+            { text: m.experience_kivi(), onclick: clickToExperienceHref.bind(null, m.experience_kivi()) },
         ]
     },
     {
         name: "Agile Project Management",
         expertise: 2,
         references: [
-            { text: m.experience_kivi(), href: '#experiences' }
+            { text: m.experience_kivi(), onclick: clickToExperienceHref.bind(null, m.experience_kivi()) },
         ]
     },
 ];

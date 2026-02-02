@@ -29,21 +29,16 @@
         selectedSidebarItem = '#'+ev.detail.id;
     }
     function onSidebarClick(ev){
-        if(ev.target.tagName !== 'A' && ev.target.parentElement.tagName !=='A') return
         sidebarClicked = true
         setTimeout(()=>sidebarClicked = false, 500);
     }
 </script>
-
-
-<svelte:head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-</svelte:head>
 <svelte:document onsectionintersected={sectionIntersect}/>
 <div class="bg-linear-to-b p-0 m-0 w-screen min-h-screen from-20% from-slate-900 to-slate-800 pb-[10dvh]">
     <Header bind:offsetHeight={headerOffsetHeight} photoUrl="/img/pp.jpg" class="z-20 sticky top-0" name="Yusuf Özer"/>
-    <div style="--header-offsetHeight: {headerOffsetHeight + 5}px">
-        <aside class="z-15 fixed top-[var(--header-offsetHeight)] grid place-items-center mt-3 h-fit w-full lg:top-0 lg:h-screen lg:right-[calc(5*var(--spacing))] lg:w-fit lg:mt-0">
+    <div class="p-0 m-0">
+        <aside style="--header-offsetHeight: {headerOffsetHeight + 5}px"
+                class="z-15 fixed top-[var(--header-offsetHeight)] grid place-items-center mt-3 h-auto w-full lg:top-0 lg:h-screen lg:right-[calc(5*var(--spacing))] lg:w-auto lg:mt-0" >
             <Sidebar onclick={onSidebarClick} bind:selected={selectedSidebarItem} bind:this={sidebar}
                      class="block w-[60%] lg:top-[65%] xl:top-[60%] lg:w-auto" elements={sidebarElements}/>
         </aside>

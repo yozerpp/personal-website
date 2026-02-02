@@ -1,7 +1,10 @@
 import { clsx, } from "clsx";
 import { twMerge } from "tailwind-merge";
 import {getLocale, setLocale} from '$paraglide/runtime.js'
-
+/**@param {string} name*/
+export function makeId(name){
+    return name.replace(/\s+/,'_').toLowerCase();
+}
 /**@param {string} newLocale*/
 export function switchLanguage(newLocale) {
     debugger

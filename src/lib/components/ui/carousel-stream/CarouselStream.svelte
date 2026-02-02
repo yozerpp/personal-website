@@ -120,9 +120,12 @@
      px-0 gap-5 snap-none static grid cursor-pointer grid-flow-row auto-rows-max lg:grid-cols-none lg:grid-rows-[auto_auto_auto] lg:grid-flow-col lg:auto-rows-auto lg:auto-cols-max"
     style="overflow-anchor: none !important;">
             {#each slides as slide,q(q)}
-                <Carousel.Item class="lg:w-auto lg:grid lg:grid-rows-subgrid lg:row-span-full" style>
-                    {@render slide.content.snippet(slide.content.args)}
-                </Carousel.Item>
+                {#if q===0 && isLg}
+                {:else}
+                    <Carousel.Item class="lg:w-auto lg:grid lg:grid-rows-subgrid lg:row-span-full" style>
+                        {@render slide.content.snippet(slide.content.args)}
+                    </Carousel.Item>
+                {/if}
             {/each}
     </Carousel.Content>
 </Carousel.Root>

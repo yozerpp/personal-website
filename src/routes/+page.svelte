@@ -17,7 +17,9 @@
     const skillsRendered = skills.map(s=>({title: s.name, content: {snippet: skillSnippet, args: s}}))
     /**@type number*/
     let innerWidth = $state();
-    const threshold=$derived(innerWidth > 768 ? .6 : 0.8);
+    const isMd= $derived(innerWidth >=768);
+    const isLg = $derived(innerWidth >= 1024);
+    const threshold=$derived(isMd ? .6 : 0.8);
     /**@type HTMLElement*/
     let main;
     onMount(()=>{
@@ -47,20 +49,20 @@
     <Skill {...props}/>
 {/snippet}
 {#snippet titleSnippet(text, tooltip, cls)}
-    <div class={cn("flex flex-row justify-center gap-3",cls)}>
+    <div class={cn("flex flex-row justify-center content-center items-center gap-3",cls)}>
         <h1 class="text-4xl md:text-5xl lg:text-7xl  font-['Inter'] text-accent text-shadow-md text-shadow-accent-foreground">{@html text}</h1>
         {#if tooltip}
-            <Tooltip content={tooltip}><CircleQuestionMark class="text-gray-400"/></Tooltip>
+            <Tooltip content={tooltip}><CircleQuestionMark class="text-gray-400 self-center"/></Tooltip>
         {/if}
     </div>
 {/snippet}
 {#snippet divider()}
     <div class="w-full ">
-        <div class="mx-[0%] py-0.5 border-t-2 border-t-accent border-solid"></div>
+        <div class="mx-0 py-0.5 border-t-2 border-t-accent border-solid"></div>
     </div>
 {/snippet}
 
-<main bind:this={main} id="main" class="min-h-full min-w-full flex flex-col items-center pt-20 lg:pt-30 gap-[10dvh] md:gap-[15dvh]">
+<main bind:this={main} id="main" class="min-h-full w-screen flex m-0 flex-col items-center pt-20 lg:pt-30 gap-[10dvh] md:gap-[15dvh]">
     <div id="about">
         <About show={true} title={m.about_title()} text={m.about_text()}/>
     </div>
@@ -77,8 +79,8 @@
     </div>
     {@render divider()}
     <div class="w-auto h-[70dvh] lg:w-screen lg:h-auto my-15" id="skills">
-        <div class="text-start mb-3 px-[5%]">
-                {@render titleSnippet(m.skills_title(),null, 'justify-start')}
+        <div class="w-full lg:text-start mb-3 px-[5%]">
+                {@render titleSnippet(m.skills_title(),isLg ? m.skills_tooltip_lg():m.skills_tooltip_sm(), 'justify-center lg:justify-start')}
         </div>
         <CarouselStream bind:controls={skillsControls} slides={skillsRendered}/>
     </div>

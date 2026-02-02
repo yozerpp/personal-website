@@ -39,8 +39,7 @@
         "bg-gray-400/80"
     ];
 </script>
-<a
-    {href}
+<button
     onmouseenter={() => mouseOver = true}
     onclick={() => {reveal = true; mouseOver = false}}
     onmouseleave={() => mouseOver = false}
@@ -66,7 +65,7 @@
             {/if}
         </div>
     {/if}
-</a>
+</button>
 <style>
     .overlap{
         grid-row: 1/1;
